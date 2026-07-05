@@ -19,11 +19,14 @@
   <li><a href="#comparative-analysis">Comparative Analysis</a></li>
   <li><a href="#numerical-methods">Numerical Implementation</a></li>
   <li><a href="#getting-started">Getting Started</a></li>
+  <li><a href="#kdv-script">The KdV Multi-Soliton Simulation Script</a></li>
+  <li><a href="#sine-gordon-script">The sine-Gordon Kink-Antikink Simulation Script</a></li>
 </ul>
 
 <hr />
 
 <div id="introduction"></div>
+
 ## 🌌 Introduction to Solitons
 
 <p>
@@ -42,6 +45,7 @@
 <hr />
 
 <div id="kdv-equation"></div>
+
 ## 🏄 The Korteweg-de Vries (KdV) Equation
 
 <p>
@@ -50,16 +54,16 @@
 
 <h3>Mathematical Form</h3>
 <p>
-  For a spatial coordinate <em>x</em> and time variable <em>t</em>, the evolution of the wave profile <em>u(x, t)</em> is governed by:
+  For a spatial coordinate $x$ and time variable $t$, the evolution of the wave profile $u(x, t)$ is formally governed by the following nonlinear PDE:
 </p>
 
-<pre><code>  &part;u/&part;t + 6u(&part;u/&part;x) + &part;³u/&part;x³ = 0</code></pre>
+$$\frac{\partial u}{\partial t} + 6u\frac{\partial u}{\partial x} + \frac{\partial^3 u}{\partial x^3} = 0$$
 
 <p>Where:</p>
 <ul>
-  <li><code>&part;u/&part;t</code> represents the time evolution of the wave.</li>
-  <li><code>6u(&part;u/&part;x)</code> is the convective nonlinear term causing the wave front to steepen.</li>
-  <li><code>&part;³u/&part;x³</code> is the linear dispersion term causing different wavelengths to travel at different speeds.</li>
+  <li><code>\partial u / \partial t</code> represents the time evolution of the wave.</li>
+  <li><code>6u(\partial u / \partial x)</code> is the convective nonlinear term causing the wave front to steepen.</li>
+  <li><code>\partial^3 u / \partial x^3</code> is the linear dispersion term causing different wavelengths to travel at different speeds.</li>
 </ul>
 
 <h3>Key Characteristics</h3>
@@ -68,9 +72,15 @@
   <li><strong>Elastic Collisions:</strong> When two solitons collide, they interact nonlinearly, undergo a clean phase shift, and emerge entirely unscathed with their original shapes and velocities intact.</li>
 </ul>
 
+<div align="center">
+  <img src="kdv_2_soliton_sandbox.png" alt="KdV 2-Soliton Elastic Collision Sandbox" width="85%">
+  <p><em>Figure 1: Snapshot realization of a dual-soliton interaction within the KdV sandbox domain.</em></p>
+</div>
+
 <hr />
 
 <div id="sine-gordon-equation"></div>
+
 ## 🌀 The sine-Gordon Equation
 
 <p>
@@ -79,25 +89,31 @@
 
 <h3>Mathematical Form</h3>
 <p>
-  The fields &phi;<em>(x, t)</em> evolve according to the following wave-like equation modified by a nonlinear periodic potential:
+  The fields $\phi(x, t)$ evolve according to the following wave-like equation modified by a nonlinear periodic potential:
 </p>
 
-<pre><code>  &part;²&phi;/&part;t² - &part;²&phi;/&part;x² + sin(&phi;) = 0</code></pre>
+$$\frac{\partial^2 \phi}{\partial t^2} - \frac{\partial^2 \phi}{\partial x^2} + \sin(\phi) = 0$$
 
 <h3>Topological Solitons (Kinks & Antikinks)</h3>
 <p>
-  Because of the periodic <code>sin(&phi;)</code> term, the solutions shift between different discrete, stable vacuum states (multiples of 2&pi;). This gives rise to unique topological configurations:
+  Because of the periodic <code>sin(\phi)</code> term, the solutions shift between different discrete, stable vacuum states (multiples of $2\pi$). This gives rise to unique topological configurations:
 </p>
 
 <ul>
-  <li><strong>Kink Soliton:</strong> A smooth transition from 0 to 2&pi; as <em>x</em> spans from negative to positive infinity. It behaves like a relativistic particle.</li>
-  <li><strong>Antikink Soliton:</strong> A smooth transition downward from 2&pi; to 0.</li>
+  <li><strong>Kink Soliton:</strong> A smooth transition from 0 to $2\pi$ as $x$ spans from negative to positive infinity. It behaves like a relativistic particle.</li>
+  <li><strong>Antikink Soliton:</strong> A smooth transition downward from $2\pi$ to 0.</li>
   <li><strong>Breather Mode:</strong> A bound kink-antikink pair that oscillates periodically in time while remaining localized in space.</li>
 </ul>
+
+<div align="center">
+  <img src="sG_kink_anti.png" alt="sine-Gordon Relativistic Kink-Antikink Collision" width="85%">
+  <p><em>Figure 2: Relativistic Kink-Antikink spatial configuration plateau mapping toward its stable boundaries.</em></p>
+</div>
 
 <hr />
 
 <div id="comparative-analysis"></div>
+
 ## 📊 Comparative Analysis
 
 <table width="100%">
@@ -127,12 +143,12 @@
     <tr>
       <td><strong>Relativistic Behavior</strong></td>
       <td>No (Galilean invariant)</td>
-      <td>Yes (Lorentz invariant, velocity bounded by c=1)</td>
+      <td>Yes (Lorentz invariant, velocity bounded by $c=1$)</td>
     </tr>
     <tr>
       <td><strong>Asymptotic Boundaries</strong></td>
       <td>Approaches 0 at infinity</td>
-      <td>Approaches multiples of 2&pi; at infinity</td>
+      <td>Approaches multiples of $2\pi$ at infinity</td>
     </tr>
   </tbody>
 </table>
@@ -140,6 +156,7 @@
 <hr />
 
 <div id="numerical-methods"></div>
+
 ## 💻 Numerical Implementation
 
 <p>
@@ -153,17 +170,19 @@
   <p>
     We approximate the spatial derivatives using the Fast Fourier Transform (FFT). Because spatial dispersion is linear in the Fourier domain, it can be integrated exactly:
   </p>
-  <pre><code>  U_k(t + &Delta;t) = U_k(t) * exp(i * k³ * &Delta;t) + Nonlinear_Corrections</code></pre>
+  
+  $$U_k(t + \Delta t) = U_k(t) \cdot \exp(i k^3 \Delta t) + \text{Nonlinear Corrections}$$
 
   <h4>sine-Gordon Solver: Fourth-Order Runge-Kutta (RK4)</h4>
   <p>
-    The second-order time derivative is split into a system of coupled first-order equations by defining an auxiliary conjugate momentum field <code>&psi; = &part;&phi;/&part;t</code>, then solved via an explicit spatial finite-difference grid.
+    The second-order time derivative is split into a system of coupled first-order equations by defining an auxiliary conjugate momentum field $\psi = \frac{\partial \phi}{\partial t}$, then solved via an explicit spatial finite-difference grid.
   </p>
 </details>
 
 <hr />
 
 <div id="getting-started"></div>
+
 ## 🚀 Getting Started
 
 <h3>Prerequisites</h3>
@@ -174,9 +193,12 @@
 <p>To launch the interactive multi-soliton collision visualizer, run the main simulation file:</p>
 <pre><code>python simulate_solitons.py --equation kdv --solitons 2</code></pre>
 
-<br>
+<hr />
+
+<div id="kdv-script"></div>
 
 ## 🐍 The KdV Multi-Soliton Simulation Script
+
 ```python
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -261,8 +283,7 @@ anim = FuncAnimation(fig, update_frame, frames=len(t_frames), interval=25, blit=
 plt.show()
 ```
 
-## 🌀 The sine-Gordon Kink-Antikink Simulation Script
-```python
+## 🐍 The KdV Multi-Soliton Simulation Script
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
