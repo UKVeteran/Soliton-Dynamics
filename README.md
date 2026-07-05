@@ -176,4 +176,87 @@
 
 <br>
 
+## 🐍 The KdV Multi-Soliton Simulation Script
+```python
+import numpy as np
+from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
+# =====================================================================
+# 1. Spatial Domain & Discrete Grid Setup
+# =====================================================================
+L = 50.0      # Computational domain width (periodic boundaries)
+N = 256       # Number of Fourier modes (power of 2 for fast FFT execution)
+x = np.linspace(-L/2, L/2, N, endpoint=False)
+dx = x[1] - x[0]
+
+# Generate the wavenumber vector (k) properly mapped to FFT frequencies
+k = 2 * np.pi * np.fft.fftfreq(N, d=dx)
+
+# =====================================================================
+# 2. Initial Condition: Constructing Two Solitons
+#    Analytical 1-soliton: u(x,t) = (c/2) * sech^2( sqrt(c)/2 * (x - c*t) )
+# =====================================================================
+c1 = 9.0   # Velocity/Amplitude parameter of the fast, heavy soliton
+c2 = 2.5   # Velocity/Amplitude parameter of the slow, light soliton
+
+x1 = -15.0 # Starting position of the fast trailing soliton
+x2 = -2.0  # Starting position of the slow leading soliton
+
+u0 = (c1/2.0) * (1.0 / np.cosh(np.sqrt(c1)/2.0 * (x - x1)))**2 + \
+     (c2/2.0) * (1.0 / np.cosh(np.sqrt(c2)/2.0 * (x - x2)))**2
+
+# =====================================================================
+# 3. Defining Governing PDE Dynamics in Fourier Space
+#    Transforming u_t + 3*(u^2)_x + u_xxx = 0  ==>  d(u_hat)/dt
+# =====================================================================
+def kdv_fourier_rhs(t, u_hat):
+    # Transform back to real space to compute the nonlinear squaring term
+    u = np.fft.ifft(u_hat).real
+    u_squared_hat = np.fft.fft(u**2)
+    
+    # Spatial derivatives become algebraic multiplications in Fourier space:
+    # d/dx -> i*k  |  d3/dx3 -> (i*k)^3 = -i * k^3
+    nonlinear_term = -3j * k * u_squared_hat
+    dispersive_term = 1j * (k**3) * u_hat
+    
+    return nonlinear_term + dispersive_term
+
+# Transform our physical initial wave packet into Fourier space
+u0_hat = np.fft.fft(u0)
+
+# =====================================================================
+# 4. Time Integration (Adaptive Runge-Kutta 45)
+# =====================================================================
+t_span = (0.0, 5.0)
+t_frames = np.linspace(t_span[0], t_span[1], 250)
+
+print("Solving nonlinear system trajectory...")
+sol = solve_ivp(kdv_fourier_rhs, t_span, u0_hat, t_eval=t_frames, method='RK45')
+
+# Reconstruct the real physical waveform out of the ODE solutions array
+u_history = np.fft.ifft(sol.y, axis=0).real
+
+# =====================================================================
+# 5. Interactive Animation Setup
+# =====================================================================
+fig, ax = plt.subplots(figsize=(9, 5.5))
+line, = ax.plot(x, u_history[:, 0], color='#007acc', lw=2.5, label='Wave Profile $u(x,t)$')
+
+ax.set_xlim(-L/2, L/2)
+ax.set_ylim(-0.5, np.max(u_history) * 1.1)
+ax.set_title("KdV 2-Soliton Elastic Collision Sandbox", fontsize=12, fontweight='bold')
+ax.set_xlabel("Spatial Coordinate (x)", fontsize=10)
+ax.set_ylabel("Amplitude (u)", fontsize=10)
+ax.grid(True, linestyle=':', alpha=0.6)
+ax.legend(loc="upper right")
+
+# Frame update driver function for matplotlib animation engine
+def update_frame(frame_idx):
+    line.set_ydata(u_history[:, frame_idx])
+    return line,
+
+anim = FuncAnimation(fig, update_frame, frames=len(t_frames), interval=25, blit=True)
+plt.show()
+```
