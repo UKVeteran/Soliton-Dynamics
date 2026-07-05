@@ -1,9 +1,3 @@
-<!-- 
-  =======================================================================
-  README.md - Soliton Dynamics, KdV & sine-Gordon Equation Simulator
-  =======================================================================
--->
-
 <div align="center">
   <h1>🌊 Soliton Dynamics</h1>
   <p><strong>A Comprehensive Mathematical Exploration & Computational Solver for the KdV and sine-Gordon Equations</strong></p>
