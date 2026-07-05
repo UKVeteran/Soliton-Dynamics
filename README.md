@@ -182,6 +182,4 @@
 
 <br>
 
-<div align="center">
-  <sub>Developed with 💙 by your Research & Computational Physics Community.</sub>
-</div>
+
