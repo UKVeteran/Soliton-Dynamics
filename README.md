@@ -380,3 +380,7 @@ def update_frame(frame_idx):
 anim = FuncAnimation(fig, update_frame, frames=frames_to_render, interval=30, blit=True)
 plt.show()
 ```
+<div align="center">
+  <img src="kdv_2_soliton_sandbox.png" alt="KdV 2-Soliton Elastic Collision Sandbox" width="85%">
+  <p><em>Figure 1: Snapshot realization of a dual-soliton interaction within the KdV sandbox domain.</em></p>
+</div>
